@@ -18,7 +18,8 @@ spring:
   datasource:                                  #数据源的相关配置
     type: com.zaxxer.hikari.HikariDataSource      #数据源类型：HikariCP
     driver-class-name: com.mysql.cj.jdbc.Driver   #mysql驱动
-    url: jdbc:mysql://localhost:3306/foodie-shop-dev?useUnicode=true&characterEncoding=UTF-8&autoReconnect
+    # url 如果是xml中写数据库连接，用转义符号&amp;代表分号，yml中写数据库配置连接用&即可
+    url: jdbc:mysql://localhost:3306/foodie-shop-dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
     username: root
     password: 1q1q1q1q
   hikari:
