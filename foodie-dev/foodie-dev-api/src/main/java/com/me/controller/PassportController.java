@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 // tags就是在Swagger2中将接口集合重新命名
@@ -50,7 +51,8 @@ public class PassportController {
         String username = userBO.getUsername();
         String password = userBO.getPassword();
         String confirmPwd = userBO.getConfirmPassword();
-
+        // 测试withCredentials时, 调试看看Cookie[]
+//        Cookie[] cookies = request.getCookies();
         // 0. 判断用户名和密码必须不为空
         if (StringUtils.isBlank(username) ||
                 StringUtils.isBlank(password) ||
