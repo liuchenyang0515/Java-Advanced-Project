@@ -3,6 +3,7 @@ package com.me.controller;
 import com.me.pojo.Users;
 import com.me.pojo.bo.UserBO;
 import com.me.service.UserService;
+import com.me.utils.MD5Utils;
 import com.me.utils.ModelJSONResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -89,6 +90,30 @@ public class PassportController {
 
         return ModelJSONResult.ok();
     }
+    @ApiOperation(value = "用户登录", notes = "用户登录", httpMethod = "POST")
+    @PostMapping("/login")
+    public ModelJSONResult login(@RequestBody UserBO userBO,
+                                 HttpServletRequest request,
+                                 HttpServletResponse response) throws Exception {
 
+        String username = userBO.getUsername();
+        String password = userBO.getPassword();
+
+        // 0. 判断用户名和密码必须不为空
+        if (StringUtils.isBlank(username) ||
+                StringUtils.isBlank(password)) {
+            return ModelJSONResult.errorMsg("用户名或密码不能为空");
+        }
+
+        // 1. 实现登录
+        Users userResult = userService.queryUserForLogin(username,
+                MD5Utils.getMD5Str(password));
+
+        if (userResult == null) {
+            return ModelJSONResult.errorMsg("用户名或密码不正确");
+        }
+
+        return ModelJSONResult.ok(userResult);
+    }
 
 }
