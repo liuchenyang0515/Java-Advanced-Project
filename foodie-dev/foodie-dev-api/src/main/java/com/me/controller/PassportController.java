@@ -4,13 +4,16 @@ import com.me.pojo.Users;
 import com.me.pojo.bo.UserBO;
 import com.me.service.UserService;
 import com.me.utils.ModelJSONResult;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+// tags就是在Swagger2中将接口集合重新命名
+@Api(value = "注册登录", tags = {"用于注册登录的相关接口"})
 @RestController
 @RequestMapping("passport")
 public class PassportController {
@@ -18,6 +21,8 @@ public class PassportController {
     @Resource
     private UserService userService;
 
+    // 阐述当前方法含义，显示再Swagger2
+    @ApiOperation(value = "用户名是否存在", notes = "用户名是否存在", httpMethod = "GET")
     @GetMapping("/usernameIsExist")
     public ModelJSONResult usernameIsExist(@RequestParam String username) {
 
@@ -36,6 +41,8 @@ public class PassportController {
         return ModelJSONResult.ok();
     }
 
+    // 阐述当前方法含义，显示再Swagger2
+    @ApiOperation(value = "用户名注册", notes = "用户名注册", httpMethod = "POST")
     @PostMapping("/register")
     public ModelJSONResult regist(@RequestBody UserBO userBO,
                                   HttpServletRequest request,
