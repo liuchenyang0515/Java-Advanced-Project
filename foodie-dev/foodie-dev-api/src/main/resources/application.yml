@@ -36,9 +36,12 @@ spring:
 # mybatis配置
 #
 ############################################################
-  mybatis:
-    type-aliases-package: com.me.pojo     #所有POJO类所在包路径
-    mapper-locations: classpath:mapper/*.xml #mapper映射文件
+mybatis:
+  type-aliases-package: com.me.pojo     #所有POJO类所在包路径
+  mapper-locations: classpath:mapper/*.xml #mapper映射文件
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
 
   ############################################################
   #
