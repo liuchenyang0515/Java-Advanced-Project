@@ -2,6 +2,7 @@ package com.me.service;
 
 
 import com.me.pojo.Category;
+import com.me.pojo.vo.CategoryVO;
 
 import java.util.List;
 
@@ -13,4 +14,12 @@ public interface CategoryService {
      * @return
      */
     public List<Category> queryAllRootLevelCat();
+
+    /**
+     * 根据一级分类id查询子分类信息
+     *
+     * @param rootCatId
+     * @return
+     */
+    public List<CategoryVO> getSubCatList(Integer rootCatId);
 }
