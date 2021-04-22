@@ -180,11 +180,12 @@ public final class CookieUtils {
      * @param cookieValue
      * @param cookieMaxage cookie生效的最大秒数
      * @param isEncode
-     * @Description: 设置Cookie的值，并使其在指定时间内生效
+     * @Description: 设置Cookie的值，并使其在指定时间内生效，删除Cookie和创建Cookie都会走这个方法，就是传参不同
      */
     private static final void doSetCookie(HttpServletRequest request, HttpServletResponse response,
                                           String cookieName, String cookieValue, int cookieMaxage, boolean isEncode) {
         try {
+            // 删除cookie会走这个逻辑，后续cookieMaxage判断是否设置时长，若为-1则不设置MaxAge，这个Expires/Max-Age就是session，即关闭浏览器这个Cookie就没了
             if (cookieValue == null) {
                 cookieValue = "";
             } else if (isEncode) {
