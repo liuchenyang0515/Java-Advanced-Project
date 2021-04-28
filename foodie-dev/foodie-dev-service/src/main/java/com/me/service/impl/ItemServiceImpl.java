@@ -5,6 +5,7 @@ import com.me.enums.CommentLevel;
 import com.me.mapper.*;
 import com.me.pojo.*;
 import com.me.pojo.vo.CommentLevelCountsVO;
+import com.me.pojo.vo.ItemCommentVO;
 import com.me.service.ItemService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -12,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ItemServiceImpl implements ItemService {
@@ -26,6 +29,8 @@ public class ItemServiceImpl implements ItemService {
     private ItemsParamMapper itemsParamMapper;
     @Resource
     private ItemsCommentsMapper itemsCommentsMapper;
+    @Resource
+    private ItemsMapperCustom itemsMapperCustom;
 
     /**
      * 根据商品ID查询详情
@@ -172,6 +177,7 @@ public class ItemServiceImpl implements ItemService {
         return countsVO;
     }
 
+
     @Transactional(propagation = Propagation.SUPPORTS)
     Integer getCommentCounts(String itemId, Integer level) {
         ItemsComments condition = new ItemsComments();
@@ -181,4 +187,24 @@ public class ItemServiceImpl implements ItemService {
         }
         return itemsCommentsMapper.selectCount(condition);
     }
+
+    /**
+     * 根据商品id查询商品的评价（分页）
+     *
+     * @param itemId
+     * @param level
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public List<ItemCommentVO> queryPagedComments(String itemId, Integer level, Integer page, Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("itemId", itemId);
+        map.put("level", level);
+        List<ItemCommentVO> list = itemsMapperCustom.queryItemComments(map);
+        return list;
+    }
+
 }
