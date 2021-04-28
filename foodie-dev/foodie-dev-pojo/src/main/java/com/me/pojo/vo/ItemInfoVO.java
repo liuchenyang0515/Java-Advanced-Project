@@ -11,10 +11,13 @@ import java.util.List;
  * 商品详情VO
  */
 public class ItemInfoVO {
-
+    // 商品对象
     private Items item;
+    // 商品图片对象列表
     private List<ItemsImg> itemImgList;
+    // 商品规格对象列表
     private List<ItemsSpec> itemSpecList;
+    // 商品参数对象
     private ItemsParam itemParams;
 
     public Items getItem() {

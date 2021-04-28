@@ -5,6 +5,7 @@ import com.me.pojo.Items;
 import com.me.pojo.ItemsImg;
 import com.me.pojo.ItemsParam;
 import com.me.pojo.ItemsSpec;
+import com.me.pojo.vo.CommentLevelCountsVO;
 import com.me.pojo.vo.ItemInfoVO;
 import com.me.service.ItemService;
 import com.me.utils.ModelJSONResult;
@@ -47,6 +48,20 @@ public class ItemsController {
         itemInfoVO.setItemParams(itemsParam);
 
         return ModelJSONResult.ok(itemInfoVO);
+    }
+
+    @ApiOperation(value = "查询商品评价等级", notes = "查询商品评价等级", httpMethod = "GET")
+    @GetMapping("/commentLevel")
+    public ModelJSONResult commentLevel(
+            @ApiParam(name = "itemId", value = "商品id", required = true)
+            @RequestParam String itemId) {
+
+        if (StringUtils.isBlank(itemId)) {
+            return ModelJSONResult.errorMsg(null);
+        }
+
+        CommentLevelCountsVO countsVO = itemService.queryCommentCounts(itemId);
+        return ModelJSONResult.ok(countsVO);
     }
 
 }
