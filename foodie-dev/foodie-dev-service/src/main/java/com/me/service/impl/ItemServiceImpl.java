@@ -1,15 +1,19 @@
 package com.me.service.impl;
 
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.me.enums.CommentLevel;
 import com.me.mapper.*;
 import com.me.pojo.*;
 import com.me.pojo.vo.CommentLevelCountsVO;
 import com.me.pojo.vo.ItemCommentVO;
 import com.me.service.ItemService;
+import com.me.utils.PagedGridResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import sun.reflect.generics.tree.ReturnType;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
@@ -190,6 +194,35 @@ public class ItemServiceImpl implements ItemService {
 
     /**
      * 根据商品id查询商品的评价（分页）
+     * <p>
+     * INFO  ServiceLogAspect:41 - ====== 开始执行 class com.me.service.impl.ItemServiceImpl.queryPagedComments ======
+     * Creating a new SqlSession
+     * Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@29183d13]
+     * JDBC Connection [HikariProxyConnection@1108095743 wrapping com.mysql.cj.jdbc.ConnectionImpl@5e4f68f] will be managed by Spring
+     * ==>  Preparing: SELECT count(0) FROM items_comments ic LEFT JOIN users u ON ic.user_id = u.id WHERE ic.item_id = ?
+     * ==> Parameters: cake-1001(String)
+     * <==    Columns: count(0)
+     * <==        Row: 23
+     * <==      Total: 1
+     * ==>  Preparing: SELECT ic.comment_level AS commentLevel, ic.content AS content, ic.sepc_name AS specName, ic.created_time AS createdTime,
+     * u.face AS userFace, u.nickname AS nickname FROM items_comments ic LEFT JOIN users u ON ic.user_id = u.id WHERE ic.item_id = ? LIMIT ?
+     * ==> Parameters: cake-1001(String), 10(Integer)
+     * <==    Columns: commentLevel, content, specName, createdTime, userFace, nickname
+     * <==        Row: 1, 很棒, 草莓味, 2019-07-22 09:55:05, http://122.152.205.72:88/group1/M00/00/05/CpoxxFw_8_qAIlFXAAAcIhVPdSg994.png, imooc
+     * <==        Row: 2, very good, 草莓味, 2019-07-22 09:55:05, http://122.152.205.72:88/group1/M00/00/05/CpoxxFw_8_qAIlFXAAAcIhVPdSg994.png, imooc
+     * <==        Row: 3, 非常好吃, 香草味, 2019-07-22 09:55:05, http://122.152.205.72:88/group1/M00/00/05/CpoxxFw_8_qAIlFXAAAcIhVPdSg994.png, imooc
+     * <==        Row: 1, 非常不错！~, 香草味, 2019-07-22 09:55:05, http://122.152.205.72:88/group1/M00/00/05/CpoxxFw_8_qAIlFXAAAcIhVPdSg994.png, imooc
+     * <==        Row: 2, 非常好吃, 香草味, 2019-07-22 09:55:05, http://122.152.205.72:88/group1/M00/00/05/CpoxxFw_8_qAIlFXAAAcIhVPdSg994.png, imooc
+     * <==        Row: 2, 非常好吃, 香草味, 2019-07-22 09:55:05, http://122.152.205.72:88/group1/M00/00/05/CpoxxFw_8_qAIlFXAAAcIhVPdSg994.png, imooc
+     * <==        Row: 1, 非常好吃, 原味, 2019-07-22 09:55:05, http://122.152.205.72:88/group1/M00/00/05/CpoxxFw_8_qAIlFXAAAcIhVPdSg994.png, imooc
+     * <==        Row: 1, 非常好吃, 香草味, 2019-07-22 09:55:05, http://122.152.205.72:88/group1/M00/00/05/CpoxxFw_8_qAIlFXAAAcIhVPdSg994.png, imooc
+     * <==        Row: 1, 非常好吃, 原味, 2019-07-22 09:55:05, http://122.152.205.72:88/group1/M00/00/05/CpoxxFw_8_qAIlFXAAAcIhVPdSg994.png, imooc
+     * <==        Row: 1, 非常好吃, 原味, 2019-07-22 09:55:05, http://122.152.205.72:88/group1/M00/00/05/CpoxxFw_8_qAIlFXAAAcIhVPdSg994.png, imooc
+     * <==      Total: 10
+     * Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@29183d13]
+     * INFO  ServiceLogAspect:60 - ====== 执行结束，耗时：10 毫秒 ======
+     * Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@29183d13]
+     * Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@29183d13]
      *
      * @param itemId
      * @param level
@@ -199,12 +232,31 @@ public class ItemServiceImpl implements ItemService {
      */
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
-    public List<ItemCommentVO> queryPagedComments(String itemId, Integer level, Integer page, Integer pageSize) {
+    public PagedGridResult queryPagedComments(String itemId, Integer level, Integer page, Integer pageSize) {
         Map<String, Object> map = new HashMap<>();
         map.put("itemId", itemId);
         map.put("level", level);
+        // mybatis-pagehelper
+        /**
+         * 使用分页插件，在查询前使用分页插件，原理：统一拦截sql，为其提供分页功能
+         * page: 第几页
+         * pageSize：每页显示条数
+         */
+        PageHelper.startPage(page, pageSize);
+
         List<ItemCommentVO> list = itemsMapperCustom.queryItemComments(map);
-        return list;
+
+        return setterPagedGrid(list, page);
+    }
+
+    private PagedGridResult setterPagedGrid(List<?> list, Integer page) {
+        PageInfo<?> pageList = new PageInfo<>(list);
+        PagedGridResult grid = new PagedGridResult();
+        grid.setPage(page); // 当前页数
+        grid.setRows(list); // 每行显示的内容，评论的时间、昵称、头像、购买的规格等等
+        grid.setTotal(pageList.getPages()); // 总页数
+        grid.setRecords(pageList.getTotal()); // 总记录数
+        return grid;
     }
 
 }

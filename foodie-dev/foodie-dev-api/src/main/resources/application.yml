@@ -43,13 +43,17 @@ mybatis:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 
-  ############################################################
-  #
-  # mybatismapper配置
-  #
-  ############################################################
-  # 通用Mapper配置
-  mapper:
-    mappers: com.me.my.mapper.MyMapper
-    not-empty: false  # 在进行数据库操作的时候，判断表达式 username != null, 是否追加 username != ''
-    dentity: MYSQL # 数据库方言
+############################################################
+#
+# mybatismapper配置
+#
+############################################################
+# 通用Mapper配置
+mapper:
+  mappers: com.me.my.mapper.MyMapper
+  not-empty: false  # 在进行数据库操作的时候，判断表达式 username != null, 是否追加 username != ''
+  dentity: MYSQL # 数据库方言
+# 分页插件配置
+pagehelper:
+  helperDialect: mysql
+  supportMethodsArguments: true
