@@ -8,6 +8,7 @@ import com.me.mapper.*;
 import com.me.pojo.*;
 import com.me.pojo.vo.CommentLevelCountsVO;
 import com.me.pojo.vo.ItemCommentVO;
+import com.me.pojo.vo.SearchItemsVO;
 import com.me.service.ItemService;
 import com.me.utils.DesensitizationUtil;
 import com.me.utils.PagedGridResult;
@@ -254,6 +255,73 @@ public class ItemServiceImpl implements ItemService {
 
         return setterPagedGrid(list, page);
     }
+
+    /**
+     * 搜索商品列表
+     * 比如默认排序，搜索"好吃"，下面是搜索日志
+     * INFO  ServiceLogAspect:41 - ====== 开始执行 class com.me.service.impl.ItemServiceImpl.searchItems ======
+     * Creating a new SqlSession
+     * Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@58214d25]
+     * INFO  HikariDataSource:110 - HikariPool-1 - Starting...
+     * INFO  HikariDataSource:123 - HikariPool-1 - Start completed.
+     * JDBC Connection [HikariProxyConnection@438140525 wrapping com.mysql.cj.jdbc.ConnectionImpl@5c7c1a52] will be managed by Spring
+     * ==>  Preparing: SELECT count(0) FROM items i LEFT JOIN items_img ii ON i.id = ii.item_id LEFT JOIN (SELECT item_id,
+     * MIN(price_discount) AS price_discount FROM items_spec GROUP BY item_id) tempSpec ON i.id = tempSpec.item_id
+     * WHERE ii.is_main = 1 AND i.item_name LIKE '%好吃%'
+     * ==> Parameters:
+     * <==    Columns: count(0)
+     * <==        Row: 30
+     * <==      Total: 1
+     * ==>  Preparing: SELECT i.id AS itemId, i.item_name AS itemName, i.sell_counts AS sellCounts, ii.url AS imgUrl,
+     * tempSpec.price_discount AS price FROM items i LEFT JOIN items_img ii ON i.id = ii.item_id
+     * LEFT JOIN ( SELECT item_id, MIN( price_discount ) AS price_discount FROM items_spec GROUP BY item_id ) tempSpec
+     * ON i.id = tempSpec.item_id WHERE ii.is_main = 1 AND i.item_name LIKE '%好吃%' ORDER BY i.item_name ASC LIMIT ?
+     * ==> Parameters: 20(Integer)
+     * <==    Columns: itemId, itemName, sellCounts, imgUrl, price
+     * <==        Row: candy-1002, 【天天吃货】休闲奶糖 零食 好吃的不得了, 968, http://122.152.205.72:88/foodie/candy-1002/img1.png, 8400
+     * <==        Row: cookies-64, 【天天吃货】正宗网红超好吃蛋黄薯片, 1049, http://122.152.205.72:88/foodie/cookies-64/img1.png, 15200
+     * <==        Row: cake-1001, 【天天吃货】真香预警 超级好吃 手撕面包 儿童早餐早饭, 1003, http://122.152.205.72:88/foodie/cake-1001/img1.png, 17600
+     * <==        Row: cake-1002, 【天天吃货】网红烘焙蛋糕 好吃的蛋糕, 363, http://122.152.205.72:88/foodie/cake-1002/img1.png, 32000
+     * <==        Row: cake-1003, 【天天吃货】超好吃华夫饼 美食诱惑 下午茶, 636, http://122.152.205.72:88/foodie/cake-1003/img1.png, 20000
+     * <==        Row: chocolate-1002, 【天天吃货】黑巧克力豆 儿时记忆 好吃噢, 206, http://122.152.205.72:88/foodie/chocolate-1002/img1.png, 5600
+     * <==        Row: cookies-60, 儿时记忆儿时最爱 好吃回味薯条, 3108, http://122.152.205.72:88/foodie/cookies-60/img1.png, 16400
+     * <==        Row: cookies-57, 好吃下午茶曲奇饼干, 3093, http://122.152.205.72:88/foodie/cookies-57/img1.png, 15600
+     * <==        Row: cake-39, 好吃蛋糕甜点脱水蛋糕, 1786, http://122.152.205.72:88/foodie/cake-39/img1.png, 4480
+     * <==        Row: cake-42, 好吃蛋糕甜点脱水蛋糕, 2328, http://122.152.205.72:88/foodie/cake-42/img1.png, 6080
+     * <==        Row: cake-37, 好吃蛋糕甜点蒸蛋糕, 3786, http://122.152.205.72:88/foodie/cake-37/img1.png, 4720
+     * <==        Row: cake-38, 好吃蛋糕甜点软面包, 1328, http://122.152.205.72:88/foodie/cake-38/img1.png, 2288
+     * <==        Row: cake-44, 好吃蛋糕甜点软面包, 1338, http://122.152.205.72:88/foodie/cake-44/img1.png, 5280
+     * <==        Row: cake-48, 好吃蛋饼 来自日本进口, 1340, http://122.152.205.72:88/foodie/cake-48/img1.png, 4960
+     * <==        Row: suger-121, 好吃零食草莓干 休闲食品, 2986, http://122.152.205.72:88/foodie/suger-121/img1.png, 11120
+     * <==        Row: suger-119, 好吃零食话梅 休闲食品, 286, http://122.152.205.72:88/foodie/suger-119/img1.png, 3120
+     * <==        Row: snacks-97, 好吃香辣农家笋 有机食物香喷喷, 3265, http://122.152.205.72:88/foodie/snacks-97/img1.png, 31200
+     * <==        Row: snacks-94, 好吃香辣泡椒脆笋, 265, http://122.152.205.72:88/foodie/snacks-94/img1.png, 7200
+     * <==        Row: cake-47, 好吃鸡蛋卷 来自日本进口, 1349, http://122.152.205.72:88/foodie/cake-47/img1.png, 5120
+     * <==        Row: meat-159, 新鲜采摘玉米 浓香好吃, 3648, http://122.152.205.72:88/foodie/meat-159/img1.png, 2880
+     * <==      Total: 20
+     * Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@58214d25]
+     * INFO  ServiceLogAspect:60 - ====== 执行结束，耗时：847 毫秒 ======
+     * Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@58214d25]
+     * Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@58214d25]
+     *
+     * @param keywords
+     * @param sort
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public PagedGridResult searchItems(String keywords, String sort, Integer page, Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("keywords", keywords);
+        map.put("sort", sort);
+
+        PageHelper.startPage(page, pageSize);
+        List<SearchItemsVO> list = itemsMapperCustom.searchItems(map);
+        return setterPagedGrid(list, page);
+    }
+
 
     private PagedGridResult setterPagedGrid(List<?> list, Integer page) {
         PageInfo<?> pageList = new PageInfo<>(list);
