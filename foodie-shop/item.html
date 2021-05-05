@@ -312,7 +312,7 @@
 
 						<!-- 分页 start-->
 						<div class="wrap" id="wrap">
-							<zpagenav v-bind:page="page" v-bind:page-size="pageSize" v-bind:total="total" 
+							<zpagenav v-bind:page="page" v-bind:page-size="pageSize" v-bind:total="total"
 								v-bind:max-page="maxPage"  v-on:pagehandler="doPaging">
 							</zpagenav>
 						</div>
@@ -562,8 +562,55 @@
 					}
 
 					// 创建购物车对象
+					/* 比如这个例子
+					{
+						"id": "cake-1006",
+						"itemName": "【天天吃货】机器猫最爱 铜锣烧 最美下午茶",
+						"catId": 37,
+						"rootCatId": 1,
+						"sellCounts": 3314,
+						"onOffStatus": 1,
+						"createdTime": "2019-09-09T06:45:34.000+0000",
+						"updatedTime": "2019-09-09T06:45:38.000+0000",
+						"content": "<p>超级好吃、非常好吃</p><img src=\"http://122.152.205.72:88/foodie/cake-1006/img1.png\"><img src=\"http://122.152.205.72:88/foodie/cake-1006/img2.png\">"
+					}*/
 					var item = this.item;
+					/**
+					 * itemImgList = [{
+							"id": "cake-1006-img-2",
+							"itemId": "cake-1006",
+							"url": "http://122.152.205.72:88/foodie/cake-1006/img2.png",
+							"sort": 2,
+							"isMain": 1,
+							"createdTime": "2019-07-01T06:46:55.000+0000",
+							"updatedTime": "2019-07-01T06:47:02.000+0000"
+						},
+						{
+							"id": "cake-1006-img-1",
+							"itemId": "cake-1006",
+							"url": "http://122.152.205.72:88/foodie/cake-1006/img1.png",
+							"sort": 1,
+							"isMain": 0,
+							"createdTime": "2019-07-01T06:46:55.000+0000",
+							"updatedTime": "2019-07-01T06:47:02.000+0000"
+						}]
+					 * @type {[]}
+					 */
 					var itemImgList = this.itemImgList;
+					/**
+					 * selectedSku = {
+							"id": "cake-1006-spec-1",
+							"itemId": "cake-1006",
+							"name": "巧克力",
+							"stock": 232,
+							"discounts": 0.9,
+							"priceDiscount": 11700,
+							"priceNormal": 13000,
+							"createdTime": "2019-07-01T06:54:20.000+0000",
+							"updatedTime": "2019-07-01T06:54:28.000+0000"
+						}
+					 * @type {{}}
+					 */
 					var selectedSku = this.selectedSku;
 
 					var tmpBuyCounts = this.buyCounts;
@@ -576,6 +623,20 @@
 					}
 
 					// 构建购物车商品对象
+					/**
+					 * 添加一件商品
+					 * shopcartItem = {
+							"itemId": "cake-1006",
+							"itemImgUrl": "http://122.152.205.72:88/foodie/cake-1006/img2.png",
+							"itemName": "【天天吃货】机器猫最爱 铜锣烧 最美下午茶",
+							"specId": "cake-1006-spec-1",
+							"specName": "巧克力",
+							"buyCounts": 1,
+							"priceDiscount": 11700,
+							"priceNormal": 13000
+						}
+					 * @type {Window.app.ShopcartItem}
+					 */
 					var shopcartItem = new app.ShopcartItem(item.id,
 						itemImgList[0].url,
 						item.itemName,
@@ -791,7 +852,7 @@
 						});
 				},
 
-				
+
 			}
 		});
 	</script>
