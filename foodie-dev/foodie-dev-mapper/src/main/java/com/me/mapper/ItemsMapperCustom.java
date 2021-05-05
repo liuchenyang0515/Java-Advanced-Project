@@ -23,4 +23,12 @@ public interface ItemsMapperCustom {
      * @return
      */
     public List<SearchItemsVO> searchItems(@Param("paramsMap") Map<String, Object> map);
+
+    /**
+     * 根据分类id搜索商品列表
+     *
+     * @param map
+     * @return
+     */
+    public List<SearchItemsVO> searchItemsByThirdCat(@Param("paramsMap") Map<String, Object> map);
 }

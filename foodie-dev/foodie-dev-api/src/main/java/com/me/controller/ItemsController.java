@@ -116,6 +116,25 @@ public class ItemsController extends BaseController {
     }
 
 
+    /**
+     * 在前端catItems.html中，调用搜索的时候，就限定了sort="k"&page=1&pageSize=20，如下
+     * this.searchInBackend(keywords, "k", 1, 20);
+     * 在xml提到
+     * <if test=" paramsMap.keywords != null and paramsMap.keywords != '' ">
+     * <!-- 语法要求在%%之间拼接不要用#，用$。这里不可能出现sql注入攻击，具体原因见接口说明-->
+     * AND i.item_name LIKE '%${paramsMap.keywords}%'
+     * </if>
+     * 这里不可能出现sql注入攻击，因为keywords是要拼接到url，而url要求如下
+     * （1）RFC3986文档规定，Url中只允许包含英文字母（a-z，A-Z）、数字（0-9）、- _ . ~ 4个特殊字符以及所有保留字符。
+     * （2）RFC3986中指定了以下字符为保留字符：! * ’ ( ) ; : @ & = + $ , / ? # [ ]
+     * 尝试注入报错：Invalid character found in the request target. The valid characters are defined in RFC 7230 and RFC 3986
+     *
+     * @param keywords
+     * @param sort
+     * @param page
+     * @param pageSize
+     * @return
+     */
     @ApiOperation(value = "搜索商品列表", notes = "搜索商品列表", httpMethod = "GET")
     @GetMapping("/search")
     public ModelJSONResult search(
@@ -138,6 +157,43 @@ public class ItemsController extends BaseController {
             pageSize = PAGE_SIZE;
         }
         PagedGridResult grid = itemService.searchItems(keywords, sort, page, pageSize);
+        return ModelJSONResult.ok(grid);
+    }
+
+
+    /**
+     * localhost:8088/items/catItems?catId=51&sort=&page=&pageSize
+     * 像这种，参数没有赋值，引用类型Integer默认是null，String类型是""
+     *
+     * @param catId
+     * @param sort
+     * @param page
+     * @param pageSize
+     * @return
+     * @RequestParam注解默认required是true 目的是要求要有这个属性字段，但是你可以不传值，比如sort=你可以不传，但是你要有sort
+     */
+    @ApiOperation(value = "通过分类id搜索商品列表", notes = "通过分类id搜索商品列表", httpMethod = "GET")
+    @GetMapping("/catItems")
+    public ModelJSONResult catItems(
+            @ApiParam(name = "catId", value = "三级分类id", required = true)
+            @RequestParam Integer catId,
+            @ApiParam(name = "sort", value = "排序", required = false)
+            @RequestParam String sort,
+            @ApiParam(name = "page", value = "查询下一页的第几页", required = false)
+            @RequestParam(required = true) Integer page,
+            @ApiParam(name = "pageSize", value = "分页的每一页显示的条数", required = false)
+            @RequestParam Integer pageSize) {
+
+        if (catId == null) {
+            return ModelJSONResult.errorMsg(null);
+        }
+        if (page == null) {
+            page = 1;
+        }
+        if (pageSize == null) {
+            pageSize = PAGE_SIZE;
+        }
+        PagedGridResult grid = itemService.searchItems(catId, sort, page, pageSize);
         return ModelJSONResult.ok(grid);
     }
 }

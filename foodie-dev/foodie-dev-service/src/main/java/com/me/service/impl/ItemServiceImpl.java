@@ -322,6 +322,56 @@ public class ItemServiceImpl implements ItemService {
         return setterPagedGrid(list, page);
     }
 
+    /**
+     * 根据三级分类id搜索商品列表
+     * <p>
+     * INFO  ServiceLogAspect:41 - ====== 开始执行 class com.me.service.impl.ItemServiceImpl.searchItems ======
+     * Creating a new SqlSession
+     * SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2091601f] was not registered for synchronization because synchronization is not active
+     * INFO  HikariDataSource:110 - HikariPool-1 - Starting...
+     * INFO  HikariDataSource:123 - HikariPool-1 - Start completed.
+     * JDBC Connection [HikariProxyConnection@1570510397 wrapping com.mysql.cj.jdbc.ConnectionImpl@3afa5bd8] will not be managed by Spring
+     * ==>  Preparing: SELECT count(0) FROM items i LEFT JOIN items_img ii ON i.id = ii.item_id
+     * LEFT JOIN (SELECT item_id, MIN(price_discount) AS price_discount FROM items_spec GROUP BY item_id) tempSpec ON i.id = tempSpec.item_id
+     * WHERE ii.is_main = 1 AND i.cat_id = ?
+     * ==> Parameters: 51(Integer)
+     * <==    Columns: count(0)
+     * <==        Row: 7
+     * <==      Total: 1
+     * ==>  Preparing: SELECT i.id AS itemId, i.item_name AS itemName, i.sell_counts AS sellCounts, ii.url AS imgUrl,
+     * tempSpec.price_discount AS price FROM items i LEFT JOIN items_img ii ON i.id = ii.item_id
+     * LEFT JOIN ( SELECT item_id, MIN( price_discount ) AS price_discount FROM items_spec GROUP BY item_id ) tempSpec
+     * ON i.id = tempSpec.item_id WHERE ii.is_main = 1 AND i.cat_id = ? ORDER BY i.item_name ASC LIMIT ?
+     * ==> Parameters: 51(Integer), 20(Integer)
+     * <==    Columns: itemId, itemName, sellCounts, imgUrl, price
+     * <==        Row: bingan-1003, 【天天吃货】可爱动物饼干 儿童早餐 孩子最爱, 868, http://122.152.205.72:88/foodie/bingan-1003/img1.png, 8000
+     * <==        Row: bingan-1004, 【天天吃货】可爱美丽甜甜圈 最美下午茶, 878, http://122.152.205.72:88/foodie/bingan-1004/img1.png, 28000
+     * <==        Row: bingan-1006, 【天天吃货】夹心吐司面包 全麦面包 早点早饭, 656, http://122.152.205.72:88/foodie/bingan-1006/img1.png, 18400
+     * <==        Row: bingan-1005, 【天天吃货】夹心吐司面包 早餐面包 早点早饭, 757, http://122.152.205.72:88/foodie/bingan-1005/img1.png, 17600
+     * <==        Row: bingan-1001, 【天天吃货】彩虹马卡龙 下午茶 美眉最爱, 396, http://122.152.205.72:88/foodie/bingan-1001/img1.png, 9000
+     * <==        Row: bingan-1002, 【天天吃货】男人最爱 秋葵饼干 嘎嘣脆, 424, http://122.152.205.72:88/foodie/bingan-1002/img1.png, 10000
+     * <==        Row: cookies-51, 嘎嘣脆酥酥麻麻饼干 休闲食品下午茶最爱, 3608, http://122.152.205.72:88/foodie/cookies-51/img1.png, 16400
+     * <==      Total: 7
+     * Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2091601f]
+     * INFO  ServiceLogAspect:60 - ====== 执行结束，耗时：785 毫秒 ======
+     *
+     * @param catId
+     * @param sort
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public PagedGridResult searchItems(Integer catId, String sort, Integer page, Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("catId", catId);
+        map.put("sort", sort);
+
+        PageHelper.startPage(page, pageSize);
+        List<SearchItemsVO> list = itemsMapperCustom.searchItemsByThirdCat(map);
+        return setterPagedGrid(list, page);
+    }
+
 
     private PagedGridResult setterPagedGrid(List<?> list, Integer page) {
         PageInfo<?> pageList = new PageInfo<>(list);
