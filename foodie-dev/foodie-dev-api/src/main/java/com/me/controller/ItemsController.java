@@ -7,6 +7,7 @@ import com.me.pojo.ItemsParam;
 import com.me.pojo.ItemsSpec;
 import com.me.pojo.vo.CommentLevelCountsVO;
 import com.me.pojo.vo.ItemInfoVO;
+import com.me.pojo.vo.ShopcartVO;
 import com.me.service.ItemService;
 import com.me.utils.ModelJSONResult;
 import com.me.utils.PagedGridResult;
@@ -195,5 +196,23 @@ public class ItemsController extends BaseController {
         }
         PagedGridResult grid = itemService.searchItems(catId, sort, page, pageSize);
         return ModelJSONResult.ok(grid);
+    }
+
+    /**
+     * 用于用户长时间未登录网站，刷新购物车中的数据（主要是价格），类似京东淘宝
+     *
+     * @param itemSpecIds
+     * @return
+     */
+    @ApiOperation(value = "根据商品规格ids查找最新的商品数据", notes = "根据商品规格ids查找最新的商品数据 ", httpMethod = "GET")
+    @GetMapping("/refresh")
+    public ModelJSONResult refresh(
+            @ApiParam(name = "itemSpecIds", value = "拼接的规格ids", required = true, example = "1001, 1003, 1005")
+            @RequestParam String itemSpecIds) {
+        if (StringUtils.isBlank(itemSpecIds)) {
+            return ModelJSONResult.errorMsg(null);
+        }
+        List<ShopcartVO> list = itemService.queryItemsBySpecIds(itemSpecIds);
+        return ModelJSONResult.ok(list);
     }
 }
