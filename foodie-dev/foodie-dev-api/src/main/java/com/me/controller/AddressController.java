@@ -61,6 +61,19 @@ public class AddressController {
         return ModelJSONResult.ok();
     }
 
+
+    @ApiOperation(value = "用户设置默认地址", notes = "用户设置默认地址", httpMethod = "POST")
+    @PostMapping("/setDefault")
+    public ModelJSONResult setDefault(
+            @RequestParam String userId,
+            @RequestParam String addressId) {
+        if (StringUtils.isBlank(userId) || StringUtils.isBlank(addressId)) {
+            return ModelJSONResult.errorMsg("");
+        }
+        addressService.updateUserAddressToBeDefault(userId, addressId);
+        return ModelJSONResult.ok();
+    }
+
     /**
      * 此段校验参数的函数已经预先写好，直接复制，其实用@Valid更简单
      *

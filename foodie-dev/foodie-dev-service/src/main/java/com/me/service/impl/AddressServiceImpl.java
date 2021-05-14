@@ -1,5 +1,6 @@
 package com.me.service.impl;
 
+import com.me.enums.YesOrNo;
 import com.me.mapper.UserAddressMapper;
 import com.me.pojo.UserAddress;
 import com.me.pojo.bo.AddressBO;
@@ -96,5 +97,31 @@ public class AddressServiceImpl implements AddressService {
         address.setUserId(userId);
 
         userAddressMapper.delete(address);
+    }
+
+    /**
+     * 修改默认地址
+     *
+     * @param userId
+     * @param addressId
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void updateUserAddressToBeDefault(String userId, String addressId) {
+        // 1.查找默认地址，设置为不默认
+        UserAddress queryAddress = new UserAddress();
+        queryAddress.setUserId(userId);
+        queryAddress.setIsDefault(YesOrNo.YES.getCode());
+        List<UserAddress> list = userAddressMapper.select(queryAddress);
+        for (UserAddress ua : list) {
+            ua.setIsDefault(YesOrNo.NO.getCode());
+            userAddressMapper.updateByPrimaryKeySelective(ua);
+        }
+        // 2.根据地址id修改为默认的地址
+        UserAddress defaultAddress = new UserAddress();
+        defaultAddress.setId(addressId);
+        defaultAddress.setUserId(userId);
+        defaultAddress.setIsDefault(YesOrNo.YES.getCode());
+        userAddressMapper.updateByPrimaryKeySelective(defaultAddress);
     }
 }
