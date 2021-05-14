@@ -51,6 +51,7 @@ public class AddressController {
 
     /**
      * 此段校验参数的函数已经预先写好，直接复制，其实用@Valid更简单
+     *
      * @param addressBO
      * @return
      */
@@ -86,6 +87,20 @@ public class AddressController {
             return ModelJSONResult.errorMsg("收货地址信息不能为空");
         }
 
+        return ModelJSONResult.ok();
+    }
+
+    @ApiOperation(value = "用户更新地址", notes = "用户更新地址", httpMethod = "POST")
+    @PostMapping("/update")
+    public ModelJSONResult update(@RequestBody AddressBO addressBO) {
+        if (StringUtils.isBlank(addressBO.getAddressId())) {
+            return ModelJSONResult.errorMsg("修改地址错误：addressId不能为空");
+        }
+        ModelJSONResult checkRes = checkAddress(addressBO);
+        if (checkRes.getStatus() != 200) {
+            return checkRes;
+        }
+        addressService.updateUserAddress(addressBO);
         return ModelJSONResult.ok();
     }
 }

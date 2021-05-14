@@ -21,6 +21,7 @@ public class AddressServiceImpl implements AddressService {
     private UserAddressMapper userAddressMapper;
     @Resource
     private Sid sid;
+
     /**
      * 根据用户id查询用户的收货地址列表
      *
@@ -60,5 +61,24 @@ public class AddressServiceImpl implements AddressService {
         newAddress.setUpdatedTime(new Date());
 
         userAddressMapper.insert(newAddress);
+    }
+
+    /**
+     * 用户修改地址
+     *
+     * @param addressBO
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void updateUserAddress(AddressBO addressBO) {
+        String addressId = addressBO.getAddressId();
+
+        UserAddress pendingAddress = new UserAddress();
+        BeanUtils.copyProperties(addressBO, pendingAddress);
+
+        pendingAddress.setId(addressId);
+        pendingAddress.setUpdatedTime(new Date());
+
+        userAddressMapper.updateByPrimaryKeySelective(pendingAddress);
     }
 }
