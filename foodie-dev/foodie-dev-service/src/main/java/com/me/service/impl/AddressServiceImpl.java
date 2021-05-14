@@ -81,4 +81,20 @@ public class AddressServiceImpl implements AddressService {
 
         userAddressMapper.updateByPrimaryKeySelective(pendingAddress);
     }
+
+    /**
+     * 根据用户id和地址id，删除对应的用户地址信息
+     *
+     * @param userId
+     * @param addressId
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void deleteUserAddress(String userId, String addressId) {
+        UserAddress address = new UserAddress();
+        address.setId(addressId);
+        address.setUserId(userId);
+
+        userAddressMapper.delete(address);
+    }
 }

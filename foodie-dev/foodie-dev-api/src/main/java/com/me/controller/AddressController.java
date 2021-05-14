@@ -49,6 +49,18 @@ public class AddressController {
         return ModelJSONResult.ok();
     }
 
+    @ApiOperation(value = "用户删除地址", notes = "用户删除地址", httpMethod = "POST")
+    @PostMapping("/delete")
+    public ModelJSONResult delete(
+            @RequestParam String userId,
+            @RequestParam String addressId) {
+        if (StringUtils.isBlank(userId) || StringUtils.isBlank(addressId)) {
+            return ModelJSONResult.errorMsg("");
+        }
+        addressService.deleteUserAddress(userId, addressId);
+        return ModelJSONResult.ok();
+    }
+
     /**
      * 此段校验参数的函数已经预先写好，直接复制，其实用@Valid更简单
      *
