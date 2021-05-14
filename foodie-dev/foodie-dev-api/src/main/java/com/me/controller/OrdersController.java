@@ -1,5 +1,6 @@
 package com.me.controller;
 
+import com.me.enums.PayMethod;
 import com.me.pojo.UserAddress;
 import com.me.pojo.bo.AddressBO;
 import com.me.pojo.bo.SubmitOrderBO;
@@ -26,6 +27,10 @@ public class OrdersController {
     @PostMapping("/create")
     public ModelJSONResult create(@RequestBody SubmitOrderBO submitOrderBO) {
         logger.info(submitOrderBO.toString());
+        if (submitOrderBO.getPayMethod() != PayMethod.WEIXIN.getType()
+                && submitOrderBO.getPayMethod() != PayMethod.ALIPAY.getType()) {
+            return ModelJSONResult.errorMsg("支付方式不支持");
+        }
         // 1.创建订单
         // 2.创建订单以后，移除购物车中已结算(已提交)的商品
         // 3.向支付中心发送当前订单，用于保存支付中心的订单数据
