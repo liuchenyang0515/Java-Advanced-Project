@@ -389,6 +389,16 @@ public class ItemServiceImpl implements ItemService {
 
     /**
      * 根据商品规格id获取规格对象
+     * <p>
+     * INFO  ServiceLogAspect:41 - ====== 开始执行 class com.me.service.impl.ItemServiceImpl.queryItemSpecById ======
+     * Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4961aed] from current transaction
+     * ==>  Preparing: SELECT id,item_id,name,stock,discounts,price_discount,price_normal,created_time,updated_time FROM items_spec WHERE id = ?
+     * ==> Parameters: 4(String)
+     * <==    Columns: id, item_id, name, stock, discounts, price_discount, price_normal, created_time, updated_time
+     * <==        Row: 4, cake-1002, 巧克力, 242, 0.90, 36000, 40000, 2019-07-01 14:54:20, 2019-07-01 14:54:28
+     * <==      Total: 1
+     * Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4961aed]
+     * INFO  ServiceLogAspect:60 - ====== 执行结束，耗时：26 毫秒 ======
      *
      * @param specId
      * @return
@@ -401,6 +411,15 @@ public class ItemServiceImpl implements ItemService {
 
     /**
      * 根据商品id获得商品图片主图url
+     * INFO  ServiceLogAspect:41 - ====== 开始执行 class com.me.service.impl.ItemServiceImpl.queryItemMainImgById ======
+     * Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4961aed] from current transaction
+     * ==>  Preparing: SELECT id,item_id,url,sort,is_main,created_time,updated_time FROM items_img WHERE item_id = ? AND is_main = ?
+     * ==> Parameters: cake-1002(String), 1(Integer)
+     * <==    Columns: id, item_id, url, sort, is_main, created_time, updated_time
+     * <==        Row: 4, cake-1002, http://122.152.205.72:88/foodie/cake-1002/img1.png, 0, 1, 2019-07-01 14:46:55, 2019-07-01 14:47:02
+     * <==      Total: 1
+     * Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4961aed]
+     * INFO  ServiceLogAspect:60 - ====== 执行结束，耗时：19 毫秒 ======
      *
      * @param itemId
      * @return

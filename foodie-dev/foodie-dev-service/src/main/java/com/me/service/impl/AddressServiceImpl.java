@@ -127,6 +127,19 @@ public class AddressServiceImpl implements AddressService {
 
     /**
      * 根据用户id和地址id，查询具体用户地址对象信息
+     * INFO  ServiceLogAspect:41 - ====== 开始执行 class com.me.service.impl.AddressServiceImpl.queryUserAddress ======
+     * Creating a new SqlSession
+     * Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@34a6c3b8]
+     * JDBC Connection [HikariProxyConnection@256319015 wrapping com.mysql.cj.jdbc.ConnectionImpl@15654123] will be managed by Spring
+     * ==>  Preparing: SELECT id,user_id,receiver,mobile,province,city,district,detail,extand,is_default,created_time,updated_time FROM
+     * user_address WHERE id = ? AND user_id = ?
+     * ==> Parameters: 2105146KNR84Z06W(String), 210415DH3FDGZMW0(String)
+     * <==    Columns: id, user_id, receiver, mobile, province, city, district, detail, extand, is_default, created_time, updated_time
+     * <==        Row: 2105146KNR84Z06W, 210415DH3FDGZMW0, 测试了啊, 13512345678, 广东, 广州, 越秀区, 123123, null, 1, 2021-05-14 09:17:35,
+     * 2021-05-14 10:37:04
+     * <==      Total: 1
+     * Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@34a6c3b8]
+     * INFO  ServiceLogAspect:60 - ====== 执行结束，耗时：20 毫秒 ======
      *
      * @param userId
      * @param addressId

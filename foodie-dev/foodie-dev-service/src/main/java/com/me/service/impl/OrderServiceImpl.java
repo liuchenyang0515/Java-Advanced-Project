@@ -11,12 +11,14 @@ import com.me.service.AddressService;
 import com.me.service.ItemService;
 import com.me.service.OrderService;
 import org.n3r.idworker.Sid;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
 
+@Service
 public class OrderServiceImpl implements OrderService {
     @Resource
     private OrdersMapper ordersMapper;
@@ -41,6 +43,7 @@ public class OrderServiceImpl implements OrderService {
     public void createOrder(SubmitOrderBO submitOrderBO) {
         String userId = submitOrderBO.getUserId();
         String addressId = submitOrderBO.getAddressId();
+        // 比如购物车订单有几种商品，selectedItemSpecIds=4,cake-1005-spec-1，这就是2种商品规格id
         String itemSpecIds = submitOrderBO.getItemSpecIds();
         Integer payMethod = submitOrderBO.getPayMethod();
         String leftMsg = submitOrderBO.getLeftMsg();
@@ -66,7 +69,7 @@ public class OrderServiceImpl implements OrderService {
         newOrder.setIsDelete(YesOrNo.NO.getCode());
         newOrder.setCreatedTime(new Date());
         newOrder.setUpdatedTime(new Date());
-        // 2.循环根据itemSpecIds保存订单商品信息表
+        // 2.循环根据itemSpecIds保存订单商品信息表，可能购物车有多种商品规格id
         String[] itemSpecIdArr = itemSpecIds.split(",");
         Integer totalAmount = 0; // 商品原价累计
         Integer realPayAmount = 0; // 优惠后的时机支付价格累计
@@ -100,6 +103,14 @@ public class OrderServiceImpl implements OrderService {
 
         newOrder.setTotalAmount(totalAmount);
         newOrder.setRealPayAmount(realPayAmount);
+        /**
+         * ==>  Preparing: INSERT INTO orders ( id,user_id,receiver_name,receiver_mobile,receiver_address,total_amount,real_pay_amount,
+         * post_amount,pay_method,left_msg,extand,is_comment,is_delete,created_time,updated_time ) VALUES( ?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )
+         * ==> Parameters: 210517AWN4F2RFRP(String), 210415DH3FDGZMW0(String), 测试了啊(String), 13512345678(String), 广东 广州 越秀区 123123(String),
+         * 57800(Integer), 52020(Integer), 0(Integer), 1(Integer), (String), null, 0(Integer), 0(Integer), 2021-05-17 15:14:48.894(Timestamp),
+         * 2021-05-17 15:14:48.894(Timestamp)
+         * <==    Updates: 1
+         */
         ordersMapper.insert(newOrder);
         // 3.保存订单状态表
         OrderStatus waitPayOrderStatus = new OrderStatus();
