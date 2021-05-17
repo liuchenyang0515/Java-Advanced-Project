@@ -4,6 +4,7 @@ package com.me.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.me.enums.CommentLevel;
+import com.me.enums.YesOrNo;
 import com.me.mapper.*;
 import com.me.pojo.*;
 import com.me.pojo.vo.CommentLevelCountsVO;
@@ -384,6 +385,34 @@ public class ItemServiceImpl implements ItemService {
         List<String> specIdsList = new ArrayList<>();
         Collections.addAll(specIdsList, ids);
         return itemsMapperCustom.queryItemsBySpecIds(specIdsList);
+    }
+
+    /**
+     * 根据商品规格id获取规格对象
+     *
+     * @param specId
+     * @return
+     */
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public ItemsSpec queryItemSpecById(String specId) {
+        return itemsSpecMapper.selectByPrimaryKey(specId);
+    }
+
+    /**
+     * 根据商品id获得商品图片主图url
+     *
+     * @param itemId
+     * @return
+     */
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public String queryItemMainImgById(String itemId) {
+        ItemsImg itemsImg = new ItemsImg();
+        itemsImg.setItemId(itemId);
+        itemsImg.setIsMain(YesOrNo.YES.getCode());
+        ItemsImg result = itemsImgMapper.selectOne(itemsImg);
+        return result != null ? result.getUrl() : "";
     }
 
 
