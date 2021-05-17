@@ -110,4 +110,12 @@ public interface ItemService {
      * @return
      */
     public String queryItemMainImgById(String itemId);
+
+    /**
+     * 减少库存
+     *
+     * @param specId
+     * @param buyConts
+     */
+    public void decreaseItemSpecStock(String specId, int buyConts);
 }

@@ -415,6 +415,33 @@ public class ItemServiceImpl implements ItemService {
         return result != null ? result.getUrl() : "";
     }
 
+    /**
+     * 减少库存
+     *
+     * @param specId
+     * @param buyConts
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void decreaseItemSpecStock(String specId, int buyConts) {
+        // 1.查询库存
+
+        // 2.判断库存，是否能够减少到0以下
+        // 库存是公共资源，高并发情况可能存在超卖，如果该方法加synchronized，效率很低，如果是集群环境，synchronized就失效了，集群环境之间资源共享还是会存在问题
+        // 更不能去锁数据库，导致数据库性能低下。
+        // 选择的方法是分布式锁zookeeper redis可以解决这个问题，但是这里暂时保留
+        /**
+         * 伪代码
+         * lockUtils.getLock(); --- 加锁
+         * ......可能超卖的逻辑代码
+         * lockUtils.unLock(); --- 解锁
+         */
+        int result = itemsMapperCustom.decreaseItemSpecStock(specId, buyConts);
+        if (result != 1) {
+            throw new RuntimeException("订单创建失败，原因：库存不足！");
+        }
+    }
+
 
     private PagedGridResult setterPagedGrid(List<?> list, Integer page) {
         PageInfo<?> pageList = new PageInfo<>(list);

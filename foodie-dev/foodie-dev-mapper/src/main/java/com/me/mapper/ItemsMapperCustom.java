@@ -32,6 +32,15 @@ public interface ItemsMapperCustom {
      * @return
      */
     public List<SearchItemsVO> searchItemsByThirdCat(@Param("paramsMap") Map<String, Object> map);
-    
+
+    /**
+     * 根据规格ids查询最新的购物车中商品数据（用于刷新渲染购物车中的商品数据）
+     *
+     * @param specIdsList
+     * @return
+     */
     public List<ShopcartVO> queryItemsBySpecIds(@Param("paramsList") List specIdsList);
+
+
+    public int decreaseItemSpecStock(@Param("specId") String specId, @Param("pendingCounts") int pendingCounts);
 }

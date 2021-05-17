@@ -1,7 +1,9 @@
 package com.me.service.impl;
 
+import com.me.enums.OrderStatusEnum;
 import com.me.enums.YesOrNo;
 import com.me.mapper.OrderItemsMapper;
+import com.me.mapper.OrderStatusMapper;
 import com.me.mapper.OrdersMapper;
 import com.me.pojo.*;
 import com.me.pojo.bo.SubmitOrderBO;
@@ -24,6 +26,8 @@ public class OrderServiceImpl implements OrderService {
     private ItemService itemService;
     @Resource
     private OrderItemsMapper orderItemsMapper;
+    @Resource
+    private OrderStatusMapper orderStatusMapper;
     @Resource
     private Sid sid;
 
@@ -90,11 +94,18 @@ public class OrderServiceImpl implements OrderService {
             subOrderItem.setItemSpecName(itemSpec.getName());
             subOrderItem.setPrice(itemSpec.getPriceDiscount());
             orderItemsMapper.insert(subOrderItem);
+            // 2.4 在用户提交订单以后，规格表中需要扣除库存
+            itemService.decreaseItemSpecStock(itemSpecId, buyCounts);
         }
 
         newOrder.setTotalAmount(totalAmount);
         newOrder.setRealPayAmount(realPayAmount);
         ordersMapper.insert(newOrder);
         // 3.保存订单状态表
+        OrderStatus waitPayOrderStatus = new OrderStatus();
+        waitPayOrderStatus.setOrderId(orderId);
+        waitPayOrderStatus.setOrderStatus(OrderStatusEnum.WAIT_PAY.getCode());
+        waitPayOrderStatus.setCreatedTime(new Date());
+        orderStatusMapper.insert(waitPayOrderStatus);
     }
 }
