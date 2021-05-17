@@ -40,7 +40,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public void createOrder(SubmitOrderBO submitOrderBO) {
+    public String createOrder(SubmitOrderBO submitOrderBO) {
         String userId = submitOrderBO.getUserId();
         String addressId = submitOrderBO.getAddressId();
         // 比如购物车订单有几种商品，selectedItemSpecIds=4,cake-1005-spec-1，这就是2种商品规格id
@@ -118,5 +118,7 @@ public class OrderServiceImpl implements OrderService {
         waitPayOrderStatus.setOrderStatus(OrderStatusEnum.WAIT_PAY.getCode());
         waitPayOrderStatus.setCreatedTime(new Date());
         orderStatusMapper.insert(waitPayOrderStatus);
+
+        return orderId;
     }
 }
