@@ -1,5 +1,6 @@
 package com.me.controller;
 
+import com.me.enums.OrderStatusEnum;
 import com.me.enums.PayMethod;
 import com.me.pojo.bo.SubmitOrderBO;
 import com.me.service.OrderService;
@@ -9,6 +10,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,5 +43,16 @@ public class OrdersController extends BaseController {
         CookieUtils.setCookie(request, response, FOODIE_SHOPCART, "", true);
         // 3.向支付中心发送当前订单，用于保存支付中心的订单数据
         return ModelJSONResult.ok(orderId);
+    }
+
+    /**
+     * 根据商品订单号，更改订单状态
+     * @param merchantOrderId
+     * @return
+     */
+    @PostMapping("notifyMerchantOrderPaied")
+    public Integer notifyMerchantOrderPaied(String merchantOrderId) {
+        orderService.updateOrderStatus(merchantOrderId, OrderStatusEnum.WAIT_DELIVER.getCode());
+        return HttpStatus.OK.value();
     }
 }

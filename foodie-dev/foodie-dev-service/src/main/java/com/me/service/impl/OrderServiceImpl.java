@@ -121,4 +121,20 @@ public class OrderServiceImpl implements OrderService {
 
         return orderId;
     }
+
+    /**
+     * 修改订单状态
+     *
+     * @param orderId
+     * @param orderStatus
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void updateOrderStatus(String orderId, Integer orderStatus) {
+        OrderStatus paiedStatus = new OrderStatus();
+        paiedStatus.setOrderId(orderId);
+        paiedStatus.setOrderStatus(orderStatus);
+        paiedStatus.setPayTime(new Date());
+        orderStatusMapper.updateByPrimaryKeySelective(paiedStatus);
+    }
 }
