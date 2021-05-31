@@ -3,6 +3,8 @@ package com.me.controller;
 import com.me.enums.OrderStatusEnum;
 import com.me.enums.PayMethod;
 import com.me.pojo.bo.SubmitOrderBO;
+import com.me.pojo.vo.MerchantOrdersVO;
+import com.me.pojo.vo.OrderVO;
 import com.me.service.OrderService;
 import com.me.utils.CookieUtils;
 import com.me.utils.ModelJSONResult;
@@ -37,11 +39,22 @@ public class OrdersController extends BaseController {
             return ModelJSONResult.errorMsg("支付方式不支持");
         }
         // 1.创建订单
-        String orderId = orderService.createOrder(submitOrderBO);
+        OrderVO orderVO = orderService.createOrder(submitOrderBO);
+        String orderId = orderVO.getOrderId();
+        MerchantOrdersVO merchantOrdersVO = orderVO.getMerchantOrdersVO();
+        merchantOrdersVO.setReturnUrl(payReturnUrl);
         // 2.创建订单以后，移除购物车中已结算(已提交)的商品
+        /**
+         * 1001
+         * 2002 -> 用户购买
+         * 3003 -> 用户购买
+         * 4004
+         */
         // TODO 整合redis之后，完善购物车中的已结算商品清除，并且同步到前端的cookie
         CookieUtils.setCookie(request, response, FOODIE_SHOPCART, "", true);
         // 3.向支付中心发送当前订单，用于保存支付中心的订单数据
+
+
         return ModelJSONResult.ok(orderId);
     }
 

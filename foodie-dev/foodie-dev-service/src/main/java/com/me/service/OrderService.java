@@ -1,6 +1,7 @@
 package com.me.service;
 
 import com.me.pojo.bo.SubmitOrderBO;
+import com.me.pojo.vo.OrderVO;
 
 public interface OrderService {
     /**
@@ -8,7 +9,7 @@ public interface OrderService {
      *
      * @param submitOrderBO
      */
-    public String createOrder(SubmitOrderBO submitOrderBO);
+    public OrderVO createOrder(SubmitOrderBO submitOrderBO);
 
     /**
      * 修改订单状态

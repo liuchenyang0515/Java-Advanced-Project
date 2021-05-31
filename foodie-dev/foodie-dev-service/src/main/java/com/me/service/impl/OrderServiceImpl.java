@@ -7,6 +7,8 @@ import com.me.mapper.OrderStatusMapper;
 import com.me.mapper.OrdersMapper;
 import com.me.pojo.*;
 import com.me.pojo.bo.SubmitOrderBO;
+import com.me.pojo.vo.MerchantOrdersVO;
+import com.me.pojo.vo.OrderVO;
 import com.me.service.AddressService;
 import com.me.service.ItemService;
 import com.me.service.OrderService;
@@ -40,7 +42,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public String createOrder(SubmitOrderBO submitOrderBO) {
+    public OrderVO createOrder(SubmitOrderBO submitOrderBO) {
         String userId = submitOrderBO.getUserId();
         String addressId = submitOrderBO.getAddressId();
         // 比如购物车订单有几种商品，selectedItemSpecIds=4,cake-1005-spec-1，这就是2种商品规格id
@@ -119,7 +121,18 @@ public class OrderServiceImpl implements OrderService {
         waitPayOrderStatus.setCreatedTime(new Date());
         orderStatusMapper.insert(waitPayOrderStatus);
 
-        return orderId;
+        // 4.构建商户订单，用于传给支付中心
+        MerchantOrdersVO merchantOrdersVO = new MerchantOrdersVO();
+        merchantOrdersVO.setMerchantOrderId(orderId);
+        merchantOrdersVO.setMerchantUserId(userId);
+        merchantOrdersVO.setAmount(realPayAmount + postAmount);
+        merchantOrdersVO.setPayMethod(payMethod);
+
+        // 5.构建自定义订单vo
+        OrderVO orderVO = new OrderVO();
+        orderVO.setOrderId(orderId);
+        orderVO.setMerchantOrdersVO(merchantOrdersVO);
+        return orderVO;
     }
 
     /**
